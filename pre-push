@@ -1,0 +1,31 @@
+#!/bin/sh
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+# 🚫 Bloqueia push direto na main
+if [ "$branch" = "main" ]; then
+  echo "🚫 Push direto na branch 'main' é proibido."
+  echo "👉 Crie um pull request para 'main'."
+  exit 1
+fi
+
+# 🔐 Protege develop (exceto no primeiro push)
+if [ "$branch" = "develop" ]; then
+  exists=$(git ls-remote --heads origin develop)
+  if [ -z "$exists" ]; then
+    echo "🟢 Primeiro push da branch 'develop' permitido."
+  else
+    echo "🚫 Push direto na branch 'develop' é proibido."
+    echo "👉 Crie um pull request para 'develop'."
+    exit 1
+  fi
+fi
+
+# ❌ Validação de nome da branch (Git Flow)
+if ! echo "$branch" | grep -Eq "^(feature|bugfix|hotfix|release|chore)/[a-z0-9._-]+$"; then
+  echo "❌ Nome de branch inválido: '$branch'"
+  echo "✅ Use prefixos como: feature/, hotfix/, chore/, release/"
+  exit 1
+fi
+
+exit 0

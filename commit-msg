@@ -1,0 +1,9 @@
+#!/bin/sh
+msg=$(cat "$1")
+pattern="^:[a-z0-9_+-]+: (feat|fix|docs|style|refactor|test|build|ci|chore|cleanup|remove|raw|init|perf|revert): .{1,80}$"
+if ! echo "$msg" | grep -Eq "$pattern"; then
+  echo "❌ Commit inválido!"
+  echo "✅ Use o formato: ':emoji: tipo: descrição do commit'"
+  echo "   Exemplo: ':sparkles: feat: criar endpoint de login'"
+  exit 1
+fi
